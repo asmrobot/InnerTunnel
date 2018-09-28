@@ -6,7 +6,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="waxbill" Version="2.1.14" />
+    <PackageReference Include="waxbill" Version="2.1.15" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\InnerTunnel.Common\InnerTunnel.Common.csproj" />
   </ItemGroup>
 
 </Project>

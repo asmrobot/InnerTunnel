@@ -5,4 +5,8 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="waxbill" Version="2.1.14" />
+  </ItemGroup>
+
 </Project>

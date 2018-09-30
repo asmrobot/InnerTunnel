@@ -1,6 +1,8 @@
-﻿using System;
+﻿using InnerTunnel.Agent.Models;
+using System;
 using waxbill;
 using waxbill.Protocols;
+using ZTImage.Configuration;
 
 namespace InnerTunnel.Agent
 {
@@ -10,11 +12,11 @@ namespace InnerTunnel.Agent
         {
             ZTImage.Log.Trace.EnableListener(ZTImage.Log.NLog.Instance);
 
-            FromServer.Instance.Start("0.0.0.0", 13889);
-            ToServer.Instance.Start("0.0.0.0", 23889);
-
-            Console.WriteLine("server is started");
-            Console.ReadKey();
+            var config = ConfigHelper.GetInstance<AgentConfigInfo>();
+            FromServer.Instance.Start("0.0.0.0", config.FromPort);
+            ToServer.Instance.Start("0.0.0.0", config.ToPort);
+            ZTImage.Log.Trace.Info("server is started");
+            (new System.Threading.ManualResetEvent(false)).WaitOne();
         }
     }
 }

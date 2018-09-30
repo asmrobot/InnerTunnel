@@ -125,6 +125,11 @@ namespace InnerTunnel.Agent
                 {
                     return;
                 }
+                if (innerPacket.Action == 2)
+                {
+                    FromServer.Instance.CloseSession(innerPacket.ClientIdentity);
+                    return;
+                }
                 byte[] datas = innerPacket.Read();
                 FromServer.Instance.SendData(innerPacket.ClientIdentity, datas);
             }

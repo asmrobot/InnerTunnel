@@ -5,11 +5,11 @@ using waxbill.Utils;
 
 namespace InnerTunnel.Common
 {
-    //数据包说明：0x0d,0x0a,4字节网络序长度,1字节操作符，4字节客户端标识，之后为数据
+    //数据包说明：0x0d,0x0a,4字节网络序长度(网络序,不包含头部的15个字节即：总长-11),1字节操作符，8字节客户端标识，之后为数据
     public class InnerTunnelProtocol: ProtocolBase
     {
-        public static ZTProtocol Define = new ZTProtocol();
-        public InnerTunnelProtocol() : base(6)
+        public static InnerTunnelProtocol Define = new InnerTunnelProtocol();
+        public InnerTunnelProtocol() : base(15)
         { }
 
         /// <summary>
@@ -33,7 +33,7 @@ namespace InnerTunnel.Common
         /// <returns></returns>
         protected unsafe override bool ParseHeader(Packet _packet, IntPtr datas)
         {
-            ZTProtocolPacket packet = _packet as ZTProtocolPacket;
+            InnerTunnelPacket packet = _packet as InnerTunnelPacket;
             if (packet == null)
             {
                 return false;
@@ -46,13 +46,15 @@ namespace InnerTunnel.Common
             }
 
             packet.ContentLength = NetworkBitConverter.ToInt32(*(memory + 2), *(memory + 3), *(memory + 4), *(memory + 5));
+            packet.Action = *(memory + 6);
+            packet.ClientIdentity = NetworkBitConverter.ToInt64(*(memory + 7), *(memory + 8), *(memory + 9), *(memory + 10), *(memory + 11), *(memory + 12), *(memory + 13), *(memory + 14));
             return true;
         }
 
 
         protected unsafe override bool ParseBody(Packet _packet, IntPtr datas, int count, out Int32 giveupCount)
         {
-            ZTProtocolPacket packet = _packet as ZTProtocolPacket;
+            InnerTunnelPacket packet = _packet as InnerTunnelPacket;
             if (packet == null)
             {
                 giveupCount = count;
@@ -77,7 +79,7 @@ namespace InnerTunnel.Common
 
         public override Packet CreatePacket(BufferManager buffer)
         {
-            return new ZTProtocolPacket(buffer);
+            return new InnerTunnelPacket(buffer);
         }
     }
 }

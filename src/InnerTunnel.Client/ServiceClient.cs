@@ -10,10 +10,19 @@ namespace InnerTunnel.Client
 {
     public class ServiceClient:TCPClient
     {
+        /// <summary>
+        /// 用户端与来源服务器的连接ID
+        /// </summary>
         public Int64 ConnectionID { get; set; }
 
-        public ServiceClient(Int64 connectionID) : base(new InnerTunnelProtocol())
+        /// <summary>
+        /// 要连接服务的端口号
+        /// </summary>
+        public Int32 ServicePort { get; set; }
+
+        public ServiceClient(Int32 servicePort,Int64 connectionID) : base(new waxbill.Protocols.RealtimeProtocol())
         {
+            this.ServicePort = servicePort;
             this.ConnectionID = connectionID;
             this.OnDisconnected += AgentClient_OnDisconnected;
             this.OnReceive += AgentClient_OnReceive;
@@ -28,13 +37,12 @@ namespace InnerTunnel.Client
         private void AgentClient_OnReceive(TCPClient client, SessionBase session, Packet packet)
         {
             byte[] datas = packet.Read();
-            AgentClient.Instance.SendData(this.ConnectionID, datas);
-            ZTImage.Log.Trace.Info("service is receive");
+            AgentClient.Instance.SendData(this.ServicePort,this.ConnectionID, datas);
         }
 
         private void AgentClient_OnDisconnected(TCPClient client, SessionBase session, Exception exception)
         {
-            AgentClient.Instance.SendDisconnect(this.ConnectionID);
+            AgentClient.Instance.SendDisconnect(this.ServicePort,this.ConnectionID);
             ZTImage.Log.Trace.Info("service is disconnected");
         }
         

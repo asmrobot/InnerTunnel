@@ -21,7 +21,7 @@ namespace InnerTunnel.Client
 
         }
 
-        private Dictionary<Int64, ServiceClient> serviceSessions = new Dictionary<long, ServiceClient>();//连接服务的集合
+        private Dictionary<string, ServiceClient> serviceSessions = new Dictionary<string, ServiceClient>();//连接服务的集合
         private ClientConfigInfo config;
 
 
@@ -32,38 +32,41 @@ namespace InnerTunnel.Client
             {
                 return;
             }
-            ServiceClient c;
+            ServiceClient serviceClient;
+            string key = innerPacket.ClientIdentity.ToString() + "|" + innerPacket.ServicePort.ToString();
             if (innerPacket.Action == 0)
             {
                 //连接
-                c = new ServiceClient(innerPacket.ClientIdentity);
-                c.Connection("127.0.0.1",config.ServicePort);
-                if (serviceSessions.ContainsKey(innerPacket.ClientIdentity))
+                //获取目标端口号
+                serviceClient = new ServiceClient(innerPacket.ServicePort,innerPacket.ClientIdentity);
+                serviceClient.Connection(config.ServiceIP,innerPacket.ServicePort);
+                if (serviceSessions.ContainsKey(key))
                 {
-                    serviceSessions[innerPacket.ClientIdentity] = c;
+                    serviceSessions[key] = serviceClient;
                 }
                 else
                 {
-                    serviceSessions.Add(innerPacket.ClientIdentity, c);
+                    serviceSessions.Add(key, serviceClient);
                 }
                 return;
             }
 
-            if (!serviceSessions.ContainsKey(innerPacket.ClientIdentity))
+            if (!serviceSessions.ContainsKey(key))
             {
                 return;
             }
-            c = serviceSessions[innerPacket.ClientIdentity];
+            serviceClient = serviceSessions[key];
 
             if (innerPacket.Action == 2)
             {
-                //断开连接                
-                c.Disconnect();
+                //断开连接      
+                serviceSessions.Remove(key);
+                serviceClient.Disconnect();
                 return;
             }
             //转发数据
             byte[] datas = packet.Read();
-            c.Send(datas);
+            serviceClient.Send(datas);
             //ZTImage.Log.Trace.Info("connection id:" + innerPacket.ClientIdentity.ToString() + ",data:" + System.Text.Encoding.ASCII.GetString(datas));
         }
 
@@ -90,9 +93,9 @@ namespace InnerTunnel.Client
         /// </summary>
         /// <param name="connectionID"></param>
         /// <param name="datas"></param>
-        public void SendData(Int64 connectionID, byte[] datas)
+        public void SendData(Int32 servicePort,Int64 connectionID, byte[] datas)
         {
-            byte[] send = PacketHelper.Serialize(connectionID, 1, datas);
+            byte[] send = PacketHelper.Serialize(servicePort,connectionID, 1, datas);
             this.Send(send);
         }
 
@@ -100,9 +103,9 @@ namespace InnerTunnel.Client
         /// 告知代理端服务已断开连接
         /// </summary>
         /// <param name="connectionID"></param>
-        public void SendDisconnect(Int64 connectionID)
+        public void SendDisconnect(Int32 servicePort,Int64 connectionID)
         {
-            byte[] send = PacketHelper.Serialize(connectionID, 2, null);
+            byte[] send = PacketHelper.Serialize(servicePort,connectionID, 2, null);
             this.Send(send);
         }
         #endregion

@@ -5,16 +5,16 @@ using InnerTunnel.Common;
 using waxbill;
 using waxbill.Packets;
 using waxbill.Sessions;
-using static InnerTunnel.Agent.ToServer;
+using static InnerTunnel.Agent.AgentServer;
 
 namespace InnerTunnel.Agent
 {
-    public class ToServer: TCPServer<ToSession>
+    public class AgentServer: TCPServer<AgentSession>
     {
-        private ToServer():base(new InnerTunnelProtocol())
+        private AgentServer():base(new InnerTunnelProtocol())
         {}
 
-        private ToSession clientSession;
+        private AgentSession clientSession;
 
         #region Public Interface
 
@@ -22,7 +22,7 @@ namespace InnerTunnel.Agent
         /// 发送连接
         /// </summary>
         /// <param name="connectID"></param>
-        public void SendConnect(long connectionID)
+        public void SendConnect(Int32 servicePort, long connectionID)
         {
             if (clientSession == null)
             {
@@ -34,7 +34,9 @@ namespace InnerTunnel.Agent
                 return;
             }
 
-            byte[] send = PacketHelper.Serialize(connectionID, 0, null);
+
+
+            byte[] send = PacketHelper.Serialize(servicePort,connectionID, 0, null);
             clientSession.Send(send);
 
         }
@@ -43,7 +45,7 @@ namespace InnerTunnel.Agent
         /// 发送数据
         /// </summary>
         /// <param name="datas"></param>
-        public void SendDatas(Int64 connectionID,byte[] datas)
+        public void SendDatas(Int32 servicePort,Int64 connectionID,byte[] datas)
         {
             if (clientSession == null)
             {
@@ -55,7 +57,7 @@ namespace InnerTunnel.Agent
                 return;
             }
 
-            byte[] send = PacketHelper.Serialize(connectionID, 1, datas);
+            byte[] send = PacketHelper.Serialize(servicePort, connectionID, 1, datas);
             clientSession.Send(send);
         }
 
@@ -64,7 +66,7 @@ namespace InnerTunnel.Agent
         /// 发送断开连接
         /// </summary>
         /// <param name="connectID"></param>
-        public void SendDisconnect(long connectionID)
+        public void SendDisconnect(Int32 servicePort, long connectionID)
         {
             if (clientSession == null)
             {
@@ -76,15 +78,15 @@ namespace InnerTunnel.Agent
                 return;
             }
 
-            byte[] send = PacketHelper.Serialize(connectionID, 2, null);
+            byte[] send = PacketHelper.Serialize(servicePort, connectionID, 2, null);
             clientSession.Send(send);
         }
         #endregion
 
         #region singleton
-        private static ToServer instance;
+        private static AgentServer instance;
         public static object lockHelper = new object();
-        public static ToServer Instance
+        public static AgentServer Instance
         {
             get
             {
@@ -94,7 +96,7 @@ namespace InnerTunnel.Agent
                     {
                         if (instance == null)
                         {
-                            instance = new ToServer();
+                            instance = new AgentServer();
                         }
                     }
                 }
@@ -103,19 +105,19 @@ namespace InnerTunnel.Agent
         }
         #endregion
 
-        public class ToSession : ServerSession
+        public class AgentSession : ServerSession
         {
             protected override void OnConnected()
             {
                 Console.WriteLine("client connect:" + this.RemoteEndPoint.ToString());
-                ToServer.Instance.clientSession = this;
+                AgentServer.Instance.clientSession = this;
             }
 
             protected override void OnDisconnected(CloseReason reason)
             {
                 Console.WriteLine("client disconnect:" + this.RemoteEndPoint.ToString());
-                ToServer.Instance.clientSession = null;
-                FromServer.Instance.TunnelClose();
+                AgentServer.Instance.clientSession = null;
+                FromServer.Instance.TunnelCloseAll();
             }
 
             protected override void OnReceived(Packet packet)
@@ -127,11 +129,11 @@ namespace InnerTunnel.Agent
                 }
                 if (innerPacket.Action == 2)
                 {
-                    FromServer.Instance.CloseSession(innerPacket.ClientIdentity);
+                    FromServer.Instance.CloseSession(innerPacket.ServicePort,innerPacket.ClientIdentity);
                     return;
                 }
                 byte[] datas = innerPacket.Read();
-                FromServer.Instance.SendData(innerPacket.ClientIdentity, datas);
+                FromServer.Instance.SendData(innerPacket.ServicePort, innerPacket.ClientIdentity, datas);
             }
 
             protected override void OnSended(PlatformBuf packet, bool result)

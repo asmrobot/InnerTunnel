@@ -11,13 +11,19 @@ namespace InnerTunnel.Client.Models
     public class ClientConfigInfo
     {
         /// <summary>
+        /// 代理IP
+        /// </summary>
+        public String AgentIP { get; set; }
+
+        /// <summary>
         /// 代理端口，即agent服务的ToPort
         /// </summary>
         public Int32 AgentPort{ get; set; }
 
         /// <summary>
-        /// 提供服务的端口
+        /// 服务IP
         /// </summary>
-        public Int32 ServicePort { get; set; }
+        public String ServiceIP { get; set; }
+        
     }
 }

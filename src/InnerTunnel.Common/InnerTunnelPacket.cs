@@ -32,5 +32,10 @@ namespace InnerTunnel.Common
         /// </summary>
         public Int64 ClientIdentity { get; set; }
 
+        /// <summary>
+        /// 服务端口
+        /// </summary>
+        public Int32 ServicePort { get; set; }
+
     }
 }

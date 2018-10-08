@@ -11,7 +11,8 @@ namespace InnerTunnel.Agent
         static void Main(string[] args)
         {
             ZTImage.Log.Trace.EnableListener(ZTImage.Log.NLog.Instance);
-            
+            waxbill.Trace.SetMessageWriter(ZTImage.Log.NLog.Instance.Error, ZTImage.Log.NLog.Instance.Info);
+
             StartServer();
             //StartSSHTest();
             (new System.Threading.ManualResetEvent(false)).WaitOne();

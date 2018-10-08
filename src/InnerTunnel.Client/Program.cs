@@ -9,6 +9,8 @@ namespace InnerTunnel.Client
         static void Main(string[] args)
         {
             ZTImage.Log.Trace.EnableListener(ZTImage.Log.NLog.Instance);
+            waxbill.Trace.SetMessageWriter(ZTImage.Log.NLog.Instance.Error, ZTImage.Log.NLog.Instance.Info);
+
             var config = ConfigHelper.GetInstance<ClientConfigInfo>();
             AgentClient.Instance.Connection(config.AgentIP, config.AgentPort);
             ZTImage.Log.Trace.Info("client is starting...");

@@ -66,7 +66,9 @@ namespace InnerTunnel.Client
             }
             //转发数据
             byte[] datas = packet.Read();
+            
             serviceClient.Send(datas);
+            //ZTImage.Log.Trace.Info("datas len:" + datas.Length.ToString());
             //ZTImage.Log.Trace.Info("connection id:" + innerPacket.ClientIdentity.ToString() + ",data:" + System.Text.Encoding.ASCII.GetString(datas));
         }
 

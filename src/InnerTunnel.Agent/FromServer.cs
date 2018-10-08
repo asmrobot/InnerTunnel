@@ -110,7 +110,7 @@ namespace InnerTunnel.Agent
         #endregion
 
 
-        public class FromServerItem : TCPServer<FromItemSession>
+        public class FromServerItem : TCPServer<FromServerItemSession>
         {
             public Int32 ServicePort { get; set; }
 
@@ -172,7 +172,9 @@ namespace InnerTunnel.Agent
             }
             #endregion
         }
-        public class FromItemSession : ServerSession
+
+
+        public class FromServerItemSession : ServerSession
         {
             protected override void OnConnected()
             {

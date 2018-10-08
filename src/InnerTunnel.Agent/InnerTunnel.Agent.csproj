@@ -6,12 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="waxbill" Version="2.1.17" />
     <PackageReference Include="ZTImage" Version="2.1.12" />
     <PackageReference Include="ZTImage.Log" Version="2.1.11" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\waxbill\src\waxbill\waxbill.csproj" />
     <ProjectReference Include="..\InnerTunnel.Common\InnerTunnel.Common.csproj" />
   </ItemGroup>
 

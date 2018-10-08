@@ -13,7 +13,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="waxbill" Version="2.1.17" />
+    <ProjectReference Include="..\..\..\waxbill\src\waxbill\waxbill.csproj" />
   </ItemGroup>
 
 </Project>

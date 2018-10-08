@@ -1,5 +1,6 @@
 ﻿using System;
 using waxbill.Packets;
+using waxbill.Pools;
 using waxbill.Protocols;
 using waxbill.Utils;
 

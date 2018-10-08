@@ -8,6 +8,7 @@ namespace InnerTunnel.Client
     {
         static void Main(string[] args)
         {
+            Console.Title = "client";
             ZTImage.Log.Trace.EnableListener(ZTImage.Log.NLog.Instance);
             waxbill.Trace.SetMessageWriter(ZTImage.Log.NLog.Instance.Error, ZTImage.Log.NLog.Instance.Info);
 

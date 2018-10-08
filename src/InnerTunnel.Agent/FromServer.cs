@@ -183,7 +183,7 @@ namespace InnerTunnel.Agent
                 {
                     return;
                 }
-                ZTImage.Log.Trace.Info("connect:" + this.RemoteEndPoint.ToString());
+                ZTImage.Log.Trace.Info(" from connect:" + this.RemoteEndPoint.ToString());
                 AgentServer.Instance.SendConnect(fsi.ServicePort,this.ConnectionID);
             }
 
@@ -194,7 +194,7 @@ namespace InnerTunnel.Agent
                 {
                     return;
                 }
-                ZTImage.Log.Trace.Info("disconnect:" + this.RemoteEndPoint.ToString());
+                ZTImage.Log.Trace.Info("from disconnect:" + this.RemoteEndPoint.ToString());
                 AgentServer.Instance.SendDisconnect(fsi.ServicePort,this.ConnectionID);
             }
 

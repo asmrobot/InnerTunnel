@@ -28,6 +28,7 @@ namespace InnerTunnel.Client
             this.OnReceive += ServiceClient_OnReceive;
             this.OnConnection += ServiceClient_OnConnection;
         }
+        
 
         private void ServiceClient_OnConnection(TCPClient client, SessionBase session)
         {
@@ -36,6 +37,7 @@ namespace InnerTunnel.Client
 
         private void ServiceClient_OnReceive(TCPClient client, SessionBase session, Packet packet)
         {
+            
             byte[] datas = packet.Read();
             AgentClient.Instance.SendData(this.ServicePort,this.ConnectionID, datas);
         }

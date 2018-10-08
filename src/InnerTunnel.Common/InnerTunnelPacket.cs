@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using waxbill.Packets;
+using waxbill.Pools;
 using waxbill.Utils;
 
 namespace InnerTunnel.Common

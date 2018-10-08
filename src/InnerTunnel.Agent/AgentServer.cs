@@ -110,13 +110,13 @@ namespace InnerTunnel.Agent
         {
             protected override void OnConnected()
             {
-                Console.WriteLine("client connect:" + this.RemoteEndPoint.ToString());
+                Trace.Info("agent connect:" + this.RemoteEndPoint.ToString());
                 AgentServer.Instance.clientSession = this;
             }
 
             protected override void OnDisconnected(CloseReason reason)
             {
-                Console.WriteLine("client disconnect:" + this.RemoteEndPoint.ToString());
+                Trace.Info("agent disconnect:" + this.RemoteEndPoint.ToString());
                 AgentServer.Instance.clientSession = null;
                 FromServer.Instance.TunnelCloseAll();
             }

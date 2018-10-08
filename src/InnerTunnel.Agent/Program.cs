@@ -10,6 +10,7 @@ namespace InnerTunnel.Agent
     {
         static void Main(string[] args)
         {
+            Console.Title = "agent";
             ZTImage.Log.Trace.EnableListener(ZTImage.Log.NLog.Instance);
             waxbill.Trace.SetMessageWriter(ZTImage.Log.NLog.Instance.Error, ZTImage.Log.NLog.Instance.Info);
 

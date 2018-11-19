@@ -32,7 +32,7 @@ namespace InnerTunnel.Common
         /// <param name="count"></param>
         /// <param name="giveupCount"></param>
         /// <returns></returns>
-        protected unsafe override bool ParseHeader(Packet _packet, IntPtr datas)
+        protected unsafe override bool ParseHeader(Packet _packet, ArraySegment<byte> datas)
         {
             InnerTunnelPacket packet = _packet as InnerTunnelPacket;
             if (packet == null)
@@ -40,46 +40,64 @@ namespace InnerTunnel.Common
                 return false;
             }
 
-            byte* memory = (byte*)datas;
-            if (*memory != 0x0d || *(memory + 1) != 0x0a)
+            
+            if (datas.Array[datas.Offset] != 0x0d || datas.Array[datas.Offset+1] != 0x0a)
             {
                 return false;
             }
 
-            packet.ContentLength = NetworkBitConverter.ToInt32(*(memory + 2), *(memory + 3), *(memory + 4), *(memory + 5));
-            packet.Action = *(memory + 6);
-            packet.ClientIdentity = NetworkBitConverter.ToInt64(*(memory + 7), *(memory + 8), *(memory + 9), *(memory + 10), *(memory + 11), *(memory + 12), *(memory + 13), *(memory + 14));
-            packet.ServicePort = NetworkBitConverter.ToInt32(*(memory + 15), *(memory + 16), *(memory + 17), *(memory + 18));
+            packet.ContentLength = NetworkBitConverter.ToInt32(
+                datas.Array[datas.Offset + 2], 
+                datas.Array[datas.Offset + 3], 
+                datas.Array[datas.Offset + 4], 
+                datas.Array[datas.Offset + 5]);
+
+            packet.Action = datas.Array[datas.Offset+6];
+            packet.ClientIdentity = NetworkBitConverter.ToInt64(
+                datas.Array[datas.Offset + 7],
+                datas.Array[datas.Offset + 8],
+                datas.Array[datas.Offset + 9],
+                datas.Array[datas.Offset + 10],
+                datas.Array[datas.Offset + 11],
+                datas.Array[datas.Offset + 12],
+                datas.Array[datas.Offset + 13],
+                datas.Array[datas.Offset + 14]);
+
+            packet.ServicePort = NetworkBitConverter.ToInt32(
+                datas.Array[datas.Offset + 15],
+                datas.Array[datas.Offset + 16],
+                datas.Array[datas.Offset + 17],
+                datas.Array[datas.Offset + 18]);
             return true;
         }
 
 
-        protected unsafe override bool ParseBody(Packet _packet, IntPtr datas, int count, out Int32 giveupCount)
+        protected unsafe override bool ParseBody(Packet _packet, ArraySegment<byte> datas,  out Int32 giveupCount)
         {
             InnerTunnelPacket packet = _packet as InnerTunnelPacket;
             if (packet == null)
             {
-                giveupCount = count;
+                giveupCount = datas.Count;
                 return false;
             }
             giveupCount = 0;
             bool result = false;
-            if ((count + packet.Count) >= packet.ContentLength)
+            if ((datas.Count + packet.Count) >= packet.ContentLength)
             {
                 giveupCount = packet.ContentLength - (Int32)packet.Count;
                 result = true;
             }
             else
             {
-                giveupCount = count;
+                giveupCount = datas.Count;
                 result = false;
             }
             //todo:保存数据 
-            packet.Write(datas, giveupCount);
+            packet.Write(new ArraySegment<byte>(datas.Array,datas.Offset, giveupCount));
             return result;
         }
 
-        public override Packet CreatePacket(BufferManager buffer)
+        public override Packet CreatePacket(PacketBufferPool buffer)
         {
             return new InnerTunnelPacket(buffer);
         }

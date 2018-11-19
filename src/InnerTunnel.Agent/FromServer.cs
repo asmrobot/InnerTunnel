@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using waxbill;
 using waxbill.Packets;
+using waxbill.Pools;
 using waxbill.Protocols;
 using waxbill.Sessions;
 using ZTImage.Configuration;
@@ -174,7 +175,7 @@ namespace InnerTunnel.Agent
         }
 
 
-        public class FromServerItemSession : ServerSession
+        public class FromServerItemSession : SessionBase
         {
             protected override void OnConnected()
             {
@@ -209,7 +210,7 @@ namespace InnerTunnel.Agent
                 AgentServer.Instance.SendDatas(fsi.ServicePort,this.ConnectionID,datas);
             }
 
-            protected override void OnSended(PlatformBuf packet, bool result)
+            protected override void OnSended(SendingQueue packet, bool result)
             { }
         }
     }

@@ -11,7 +11,7 @@ namespace InnerTunnel.Common
     //数据包说明：0x0d,0x0a,4字节网络序长度,1字节操作符，4字节客户端标识，之后为数据
     public class InnerTunnelPacket:Packet
     {
-        public InnerTunnelPacket(BufferManager buffer):base(buffer)
+        public InnerTunnelPacket(PacketBufferPool buffer):base(buffer)
         {
 
         }

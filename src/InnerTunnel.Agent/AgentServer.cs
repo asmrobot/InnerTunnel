@@ -4,6 +4,7 @@ using System.Text;
 using InnerTunnel.Common;
 using waxbill;
 using waxbill.Packets;
+using waxbill.Pools;
 using waxbill.Sessions;
 using static InnerTunnel.Agent.AgentServer;
 
@@ -106,7 +107,7 @@ namespace InnerTunnel.Agent
         }
         #endregion
 
-        public class AgentSession : ServerSession
+        public class AgentSession : SessionBase
         {
             protected override void OnConnected()
             {
@@ -137,7 +138,7 @@ namespace InnerTunnel.Agent
                 FromServer.Instance.SendData(innerPacket.ServicePort, innerPacket.ClientIdentity, datas);
             }
 
-            protected override void OnSended(PlatformBuf packet, bool result)
+            protected override void OnSended(SendingQueue packet, bool result)
             { }
         }
     }

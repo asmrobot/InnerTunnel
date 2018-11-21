@@ -17,29 +17,34 @@ namespace InnerTunnel.Agent
 
         private AgentSession clientSession;
 
+        public void SetClient(AgentSession session)
+        {
+            this.clientSession = session;
+        }
+
         #region Public Interface
 
         /// <summary>
         /// 发送连接
         /// </summary>
         /// <param name="connectID"></param>
-        public void SendConnect(Int32 servicePort, long connectionID)
+        public bool SendConnect(Int32 servicePort, long connectionID)
         {
             if (clientSession == null)
             {
-                return;
+                return false;
             }
 
             if (clientSession.IsClosed)
             {
-                return;
+                return false;
             }
 
 
 
             byte[] send = PacketHelper.Serialize(servicePort,connectionID, 0, null);
             clientSession.Send(send);
-
+            return true;
         }
 
         /// <summary>
@@ -107,39 +112,6 @@ namespace InnerTunnel.Agent
         }
         #endregion
 
-        public class AgentSession : SessionBase
-        {
-            protected override void OnConnected()
-            {
-                Trace.Info("agent connect:" + this.RemoteEndPoint.ToString());
-                AgentServer.Instance.clientSession = this;
-            }
-
-            protected override void OnDisconnected(CloseReason reason)
-            {
-                Trace.Info("agent disconnect:" + this.RemoteEndPoint.ToString());
-                AgentServer.Instance.clientSession = null;
-                FromServer.Instance.TunnelCloseAll();
-            }
-
-            protected override void OnReceived(Packet packet)
-            {
-                InnerTunnelPacket innerPacket = packet as InnerTunnelPacket;
-                if (innerPacket == null)
-                {
-                    return;
-                }
-                if (innerPacket.Action == 2)
-                {
-                    FromServer.Instance.CloseSession(innerPacket.ServicePort,innerPacket.ClientIdentity);
-                    return;
-                }
-                byte[] datas = innerPacket.Read();
-                FromServer.Instance.SendData(innerPacket.ServicePort, innerPacket.ClientIdentity, datas);
-            }
-
-            protected override void OnSended(SendingQueue packet, bool result)
-            { }
-        }
+        
     }
 }

@@ -17,7 +17,7 @@ namespace InnerTunnel.Client
         {
             config = ConfigHelper.GetInstance<ClientConfigInfo>();
             this.OnDisconnected += AgentClient_OnDisconnected;
-            this.OnReceive += AgentClient_OnReceive;
+            this.OnReceived += AgentClient_OnReceive;
 
         }
 
@@ -39,7 +39,7 @@ namespace InnerTunnel.Client
                 //连接
                 //获取目标端口号
                 serviceClient = new ServiceClient(innerPacket.ServicePort,innerPacket.ClientIdentity);
-                serviceClient.Connection(config.ServiceIP,innerPacket.ServicePort);
+                serviceClient.Connect(config.ServiceIP,innerPacket.ServicePort);
                 if (serviceSessions.ContainsKey(key))
                 {
                     serviceSessions[key] = serviceClient;
@@ -68,8 +68,6 @@ namespace InnerTunnel.Client
             byte[] datas = packet.Read();
             
             serviceClient.Send(datas);
-            //ZTImage.Log.Trace.Info("datas len:" + datas.Length.ToString());
-            //ZTImage.Log.Trace.Info("connection id:" + innerPacket.ClientIdentity.ToString() + ",data:" + System.Text.Encoding.ASCII.GetString(datas));
         }
 
 
@@ -79,7 +77,7 @@ namespace InnerTunnel.Client
         /// <param name="client"></param>
         /// <param name="session"></param>
         /// <param name="exception"></param>
-        private void AgentClient_OnDisconnected(TCPClient client, waxbill.Sessions.SessionBase session, Exception exception)
+        private void AgentClient_OnDisconnected(TCPClient client, waxbill.Sessions.SessionBase session, CloseReason exception)
         {
             //通道关闭后关闭所有连接
             foreach (var item in serviceSessions)

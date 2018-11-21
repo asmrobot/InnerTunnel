@@ -25,15 +25,13 @@ namespace InnerTunnel.Client
             this.ServicePort = servicePort;
             this.ConnectionID = connectionID;
             this.OnDisconnected += ServiceClient_OnDisconnected;
-            this.OnReceive += ServiceClient_OnReceive;
-            this.OnConnection += ServiceClient_OnConnection;
+            this.OnReceived += ServiceClient_OnReceive;
+            this.OnConnected += ServiceClient_OnConnection;
         }
         
 
         private void ServiceClient_OnConnection(TCPClient client, SessionBase session)
-        {
-            ZTImage.Log.Trace.Info("service is connected");
-        }
+        {}
 
         private void ServiceClient_OnReceive(TCPClient client, SessionBase session, Packet packet)
         {
@@ -42,10 +40,9 @@ namespace InnerTunnel.Client
             AgentClient.Instance.SendData(this.ServicePort,this.ConnectionID, datas);
         }
 
-        private void ServiceClient_OnDisconnected(TCPClient client, SessionBase session, Exception exception)
+        private void ServiceClient_OnDisconnected(TCPClient client, SessionBase session, CloseReason exception)
         {
             AgentClient.Instance.SendDisconnect(this.ServicePort,this.ConnectionID);
-            ZTImage.Log.Trace.Info("service is disconnected");
         }
         
     }

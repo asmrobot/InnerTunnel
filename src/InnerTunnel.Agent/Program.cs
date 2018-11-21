@@ -1,7 +1,9 @@
 ﻿using InnerTunnel.Agent.Models;
 using System;
 using waxbill;
+using waxbill.Packets;
 using waxbill.Protocols;
+using waxbill.Sessions;
 using ZTImage.Configuration;
 
 namespace InnerTunnel.Agent
@@ -23,7 +25,7 @@ namespace InnerTunnel.Agent
         {
             var config = ConfigHelper.GetInstance<AgentConfigInfo>();
             //FromServer.Instance.Start("0.0.0.0", config.FromPort);
-            FromServer.Instance.Start();
+            FromServerManager.Instance.Start();
             AgentServer.Instance.Start("0.0.0.0", config.AgentPort);
             ZTImage.Log.Trace.Info("server is started");
         }
@@ -32,18 +34,18 @@ namespace InnerTunnel.Agent
         {
             TCPClient client = new TCPClient(new RealtimeProtocol());
             client.OnDisconnected += Client_OnDisconnected;
-            client.OnReceive += Client_OnReceive;
-            client.Connection("192.168.3.222", 22);
+            client.OnReceived += Client_OnReceive;
+            client.Connect("192.168.3.222", 22);
             ZTImage.Log.Trace.Info("connect is starting");
         }
 
-        private static void Client_OnReceive(TCPClient client, waxbill.Sessions.SessionBase session, waxbill.Packets.Packet packet)
+        private static void Client_OnReceive(TCPClient client,SessionBase session, Packet packet)
         {
             byte[] datas = packet.Read();
             ZTImage.Log.Trace.Info(System.Text.Encoding.ASCII.GetString(datas));
         }
 
-        private static void Client_OnDisconnected(TCPClient client, waxbill.Sessions.SessionBase session, Exception exception)
+        private static void Client_OnDisconnected(TCPClient client, waxbill.Sessions.SessionBase session, CloseReason exception)
         {
             ZTImage.Log.Trace.Info("ssh is disconnect");
             
